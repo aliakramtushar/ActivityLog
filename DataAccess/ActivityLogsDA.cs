@@ -1,0 +1,40 @@
+﻿using ActivityLog.GlobalEngine;
+using ActivityLog.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace ActivityLog.DataAccess
+{
+    public class ActivityLogsDA
+    {
+        //public static string IUD(ActivityLogs oActivityLogs, EnumDBOperation oDBOperation, int nUserID)
+        //{
+        //    return GlobalHelpers.ExcecuteQurey("EXEC SP_IUD_User",
+        //        oUser.UserID, oUser.UserName, oUser.UserShortName, oUser.Password, (int)oUser.UserType, oUser.Email, oUser.Mobile,
+        //        oUser.Code, oUser.Validity, oUser.Activity, (int)oDBOperation, nUserID);
+        //}
+        //public static string ValidateLogin(int nBUID, User oUser)
+        //{
+        //    return "SELECT * FROM View_User WHERE [UserName] = '" + oUser.UserName + "' AND [Password] = '" + oUser.Password + "' AND Activity = 1 AND Validity = 1";
+        //}
+        public static string Gets(int nUserID)
+        {
+            return "SELECT * FROM ActivityLog";
+        }
+        public static string Gets(string sSQL, int nUserID)
+        {
+            return sSQL;
+        }
+        public static string GetDynamicObjectList(string sSQL, int nUserID)
+        {
+            return sSQL;
+        }
+        //public static string Get(int nID, int nUserID)
+        //{
+        //    return "SELECT * FROM View_User WHERE [UserID] =" + nID;
+        //}
+
+    }
+}

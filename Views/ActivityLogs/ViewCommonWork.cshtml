@@ -1,0 +1,172 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <div class="col-lg-12" style="background-color:powderblue; padding:20px">
+        <label class="col-lg-2" style="font-weight:bold;margin: 0 5px 12px 40px">Task Name :</label>
+        <select id="cboTask" class="col-sm-6 easyui-combobox" panelHeight="auto" onchange="LoadTask()"></select>
+    </div>
+    <div class="col-lg-12" style="background-color:lightgreen; padding:20px">
+        <div id="divInput" class="col-lg-12">
+        </div>
+    </div>
+    <div class="col-lg-12" style="background-color:lightgreen; padding:20px;">
+        <button id="btnTask" type="button" class="col-sm-12 btn btn-success">Execute</button>
+    </div>
+
+<script type="text/javascript">
+    var _oCommonWorks = [];
+    var _vWhereCols = [];
+    var _vUpdateCols = '';
+        $(document).ready(function () {
+        debugger;
+            _oCommonWorks = @Html.Raw( new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(@ViewBag.CommonWorks));
+            $('#cboTask').combobox({ data: _oCommonWorks, valueField: 'CommonWorkID', textField: 'CommonWorkNameFullName' });
+            $("#btnTask").attr("disabled", true);
+        });
+    $('#cboTask').combobox({
+        onSelect: function (param) {
+            if (param.CommonWorkID <=0) {
+                alert("Please Select Any Job");
+                return;
+            }
+            $('#divInput').empty();
+            _vWhereCols = null;
+            $("#btnTask").attr("disabled", true);
+            _vWhereCols = param.WhereCols.split("#");
+            debugger;
+            if (_vWhereCols.length > 0) {
+                for (var i = 0; i < _vWhereCols.length && _vWhereCols.length > 1; i++) {
+                    var fragment = createHtml('<input id="' + _vWhereCols[i] + '" placeholder="' + _vWhereCols[i] + '" style="width:80%; margin:10px auto" class="form-control">');
+                    document.getElementById("divInput").appendChild(fragment);
+                    $("#btnTask").attr("disabled", false);
+                }
+            }           
+        }
+    });
+
+    //$('#btnExecute').click(function (e) {
+    //    var sWhereCols = '';
+    //    var sUpdateCols = '';
+
+    //    //if ($('#cboTask').combobox('getValue') == 0) {
+    //    //    alert('Please Select Any Job From List');
+    //    //    $('#cboTask').focus();
+    //    //    return;
+    //    //}
+    //    if (!confirm("Are You Want To Execute This Query ?")) { return; }
+    //    for (var i = 0; i < _vWhereCols.length; i++) {
+    //        if ($('#' + _vWhereCols[i] + '').val() == '') {
+    //            alert("Please Enter " + _vWhereCols[i] + " !!");
+    //            $('#' + _vWhereCols[i] + '').focus();
+    //            return;
+    //        }
+    //        else {
+    //            sWhereCols = sWhereCols + $('#' + _vWhereCols[i] + '').val() + '#';
+    //        }
+    //    }
+    //    for (var i = 0; i < _vUpdateCols.length; i++) {
+    //        if ($('#' + _vUpdateCols[i] + '').val() == '') {
+    //            alert("Please Enter " + _vUpdateCols[i] + " !!");
+    //            $('#' + _vUpdateCols[i] + '').focus();
+    //            return;
+    //        }
+    //        else {
+    //            sUpdateCols = sUpdateCols + $('#' + _vUpdateCols[i] + '').val() + '#';
+    //        }
+    //    }
+    //    debugger;
+    //    var obj = {
+    //        CommonWorkID: $('#cboTask').combobox('getValue'),
+    //        CommonWorkName: $('#cboTask').combobox('getText'),
+    //        WhereCols: sWhereCols,
+    //        UpdateCols: sUpdateCols,
+    //        Remarks: ''
+    //    }
+    //    $.ajax({
+    //        type: "POST",
+    //        dataType: "json",
+    //        url: "/ActivityLogs/ExecCommonWork",
+    //        traditional: true,
+    //        data: JSON.stringify(obj),
+    //        contentType: "application/json; charset=utf-8",
+    //        success: function (data) {
+    //            debugger;
+    //            var sFeedBackMessage = jQuery.parseJSON(data);
+    //            if (sFeedBackMessage == null || sFeedBackMessage == '') {
+    //                alert('Data Saved Successfully');
+    //                window.location.reload();
+    //            }
+    //            else {
+    //                alert(sFeedBackMessage);
+    //            }
+    //        },
+    //        error: function (xhr, status, error) {
+    //            alert(error);
+    //        }
+    //    });
+    //});
+    function createHtml(htmlStr) {
+    var frag = document.createDocumentFragment(),
+        temp = document.createElement('div');
+    temp.innerHTML = htmlStr;
+    while (temp.firstChild) {
+        frag.appendChild(temp.firstChild);
+      }
+        return frag;
+    }
+
+
+
+    function InputValidation() {
+        _vUpdateCols = '';
+        if (_vWhereCols.length > 0) {
+            for (var i = 0; i < _vWhereCols.length && _vWhereCols.length > 1; i++) {
+                if ($('#' + _vWhereCols[i]).val() == '') {
+                    alert('Please Enter Value !!');
+                    $('#' + _vWhereCols[i]).focus();
+                    return false;
+                }
+                else {
+                    _vUpdateCols = _vUpdateCols + '#' + $('#' + _vWhereCols[i]).val();
+                }
+            }
+            return true;
+        }
+    }
+    $('#btnTask').click(function (e) {
+        debugger;
+        if (!InputValidation()) { return };
+        if (!confirm("Are You Want To Execute This Roll Back Query ?")) { return; }
+        
+        debugger;
+        var obj = {
+            CommonWorkID: $('#cboTask').combobox('getValue'),
+            CommonWorkName : $('#cboTask').combobox('getText'),
+            UpdateCols: _vUpdateCols
+        }
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/ActivityLogs/ExecCommonWork",
+            traditional: true,
+            data: JSON.stringify(obj),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                debugger;
+                var sFeedBackMessage = jQuery.parseJSON(data);
+                if (sFeedBackMessage == null || sFeedBackMessage == '') {
+                    alert('Data Saved Successfully');
+                    window.location.reload();
+                }
+                else {
+                    alert(sFeedBackMessage);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+    });
+
+</script>
+

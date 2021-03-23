@@ -1,0 +1,111 @@
+E:\MyProjects\Asp.net\ActivityLog\bin\ActivityLog.dll.config
+E:\MyProjects\Asp.net\ActivityLog\bin\ActivityLog.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\ActivityLog.pdb
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\csc.exe
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\csc.exe.config
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\csc.rsp
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\csi.exe
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\csi.rsp
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.CodeAnalysis.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.CSharp.Core.targets
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\Microsoft.VisualBasic.Core.targets
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\System.AppContext.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\System.Collections.Immutable.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\System.Diagnostics.StackTrace.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\System.IO.FileSystem.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\System.IO.FileSystem.Primitives.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\System.Reflection.Metadata.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\vbc.exe
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\vbc.exe.config
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\vbc.rsp
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\VBCSCompiler.exe
+E:\MyProjects\Asp.net\ActivityLog\bin\roslyn\VBCSCompiler.exe.config
+E:\MyProjects\Asp.net\ActivityLog\bin\Antlr3.Runtime.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\Microsoft.Web.Infrastructure.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\Newtonsoft.Json.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Helpers.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Mvc.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Optimization.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Razor.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.WebPages.Deployment.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.WebPages.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.WebPages.Razor.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\WebGrease.dll
+E:\MyProjects\Asp.net\ActivityLog\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\Newtonsoft.Json.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Helpers.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Mvc.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Optimization.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.Razor.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.WebPages.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.WebPages.Deployment.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\System.Web.WebPages.Razor.xml
+E:\MyProjects\Asp.net\ActivityLog\bin\Antlr3.Runtime.pdb
+E:\MyProjects\Asp.net\ActivityLog\obj\Debug\ActivityLog.csprojAssemblyReference.cache
+E:\MyProjects\Asp.net\ActivityLog\obj\Debug\ActivityLog.csproj.CopyComplete
+E:\MyProjects\Asp.net\ActivityLog\obj\Debug\ActivityLog.dll
+E:\MyProjects\Asp.net\ActivityLog\obj\Debug\ActivityLog.pdb
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\ActivityLog.dll.config
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\ActivityLog.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\ActivityLog.pdb
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\csc.exe
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\csc.exe.config
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\csc.rsp
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\csi.exe
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\csi.rsp
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.CodeAnalysis.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.CSharp.Core.targets
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\Microsoft.VisualBasic.Core.targets
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\System.AppContext.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\System.Collections.Immutable.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\System.Diagnostics.StackTrace.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\System.IO.FileSystem.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\System.IO.FileSystem.Primitives.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\System.Reflection.Metadata.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\vbc.exe
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\vbc.exe.config
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\vbc.rsp
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\VBCSCompiler.exe
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\roslyn\VBCSCompiler.exe.config
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\Antlr3.Runtime.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\Microsoft.Web.Infrastructure.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\Newtonsoft.Json.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Helpers.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Mvc.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Optimization.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Razor.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.WebPages.Deployment.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.WebPages.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.WebPages.Razor.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\WebGrease.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\Newtonsoft.Json.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Helpers.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Mvc.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Optimization.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.Razor.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.WebPages.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.WebPages.Deployment.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\System.Web.WebPages.Razor.xml
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\bin\Antlr3.Runtime.pdb
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\obj\Debug\ActivityLog.csprojAssemblyReference.cache
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\obj\Debug\ActivityLog.csproj.CoreCompileInputs.cache
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\obj\Debug\ActivityLog.csproj.CopyComplete
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\obj\Debug\ActivityLog.dll
+H:\Source Code\ASP.NET\ASP.NET (ActivityLog)\obj\Debug\ActivityLog.pdb

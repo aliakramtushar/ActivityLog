@@ -1,0 +1,38 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+        <table id="ActivityLogList" class="easyui-datagrid" title="Activity Log List" style="width:100%;height:100%"
+               data-options="rownumbers:true,singleSelect:true,collapsible:false, toolbar: '#toolbar'">
+            <thead>
+                <tr>
+                    <th data-options="field:'TableName',width:100">Table Name</th>
+                    <th data-options="field:'ColNames',width:200">Column Names</th>
+                    <th data-options="field:'ColPreviousValues',width:200">Previous Value</th>
+                    <th data-options="field:'ColNewValues',width:200">New Value</th>
+                    <th data-options="field:'WhereClause',width:300">Where Clause</th>
+                    <th data-options="field:'DBOperationSt',width:100,align:'center'">Operation</th>
+                    <th data-options="field:'DBServerDateTimeSt',width:170,align:'center'">Date Time</th>
+                    <th data-options="field:'Remarks',width:250">Remarks</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="toolbar">
+            <input id="txtPageNumber" class="easyui-numberspinner" value="1" data-options="min:1,label:'Go to Page:',labelPosition:'left',spinAlign:'horizontal'" style="width:200px;">
+            <a id="btnGoToPage" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'"></a>
+            <a href="/ActivityLogs/ViewActivityLogs?nID=0&nUserID=1" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'">Add</a>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var _nPageNumber = 0;
+                debugger;
+                var oActivityLogsList = @Html.Raw( new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(@ViewBag.List));
+                _nPageNumber = @Html.Raw( new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(@ViewBag.PageNumber));
+                $('#ActivityLogList').datagrid('loadData', oActivityLogsList);
+                $('#txtPageNumber').numberspinner('setText', parseInt(_nPageNumber));
+            });
+            $('#btnGoToPage').click(function (e) {
+                window.location.href = "/ActivityLogs/ActivityLogsList?nUserID=1&nPageNumber=" + $('#txtPageNumber').numberspinner('getText');
+            });
+
+
+        </script>

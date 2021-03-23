@@ -1,0 +1,100 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Admin Login</title>
+    <link href="~/template/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="~/template/css/sb-admin.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+
+    <div class="container">
+        <div class="card card-login mx-auto mt-5">
+            <div class="card-header" style="align-items:center"><label style="font-size:25px; font-weight:bold; width:100%; text-align:center">ADMIN LOGIN</label> </div>
+            <div class="card-body">
+                <form>
+                    <div class="form-group">
+                        <div class="form-label-group">
+                            <input type="text" id="txtServerName" class="form-control" placeholder="Server Name" required="required" autofocus="autofocus">
+                            <label for="txtServerName">Server Name</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label-group">
+                            <input type="text" id="txtDatabaseName" class="form-control" placeholder="Database Name" required="required">
+                            <label for="txtDatabaseName">Database Name</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label-group">
+                            <input type="text" id="txtUserName" class="form-control" placeholder="User Name" required="required" autofocus="autofocus">
+                            <label for="txtUserName">User Name</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label-group">
+                            <input type="password" id="txtPassword" class="form-control" placeholder="Password" required="required">
+                            <label for="txtPassword">Password</label>
+                        </div>
+                    </div>
+                    <a id="btnLogin" class="btn btn-primary btn-block">Login</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+</body>
+
+</html>
+<script src="~/template/vendor/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+        debugger;
+        });
+    $('#btnLogin').click(function e() {
+        if ($('#txtUserName').val() == '') {
+            alert('Please fill all fields !! ');
+            return;
+        }
+        var oCommonGateway = {
+            Server: $('#txtServerName').val(),
+            Database : $('#txtDatabaseName').val(),
+            UserID : $('#txtUserName').val(),
+            Password: $('#txtPassword').val(),
+            IntegratedSecurity: false,
+        }
+         $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Home/UserLogin",
+            traditional: true,
+            data: JSON.stringify(oCommonGateway),
+            contentType: "application/json; charset=utf-8",
+             success: function (data) {
+                 debugger;
+                 var oDataList = jQuery.parseJSON(data);
+                 if (oDataList == "Successful") {
+                     window.location.href = "/ActivityLogs/ActivityLogsList?nUserID=1";
+                }
+                else {
+                    alert(sFeedBackMessage);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+    })
+</script>

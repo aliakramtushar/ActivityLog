@@ -1,0 +1,339 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<table id="tblDynamicTable" class="easyui-datagrid" title="Changing Dashboard (Edit & Delete Only)"
+       data-options="rownumbers:true,singleSelect:true,collapsible:true,toolbar:'#tb'" pagination="false">
+    <thead>
+        <tr>
+            <th data-options="field:'itemid',width:400"> Output Panel Of Searching Data List .............</th>
+        </tr>
+    </thead>
+</table>
+<div id="tb" style="padding:10px">
+    <input id="txtTop" class="easyui-numberspinner" value="100" data-options="spinAlign:'horizontal'" style="width:105px;">
+    <label style="font-weight:bold;">Table Name :</label>
+    <select id="cboTable" class="easyui-combobox" panelHeight="auto" onchange="LoadColumn()" style="min-width:150px;max-height:350px"></select>
+    <label style="font-weight:bold;">WHERE :</label>
+    <select id="cboColumn" class="easyui-combobox" panelHeight="auto" style="min-width:150px"></select>
+    <label style="font-weight:bold;">=</label>
+    <input id="txtValue" class="easyui-textbox" data-options="prompt:'Enter Equal Value'," style="min-width:150px;">
+    <a id="btnAdd" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'"></a>
+    <a id="btnClear" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" style="float:right"></a>
+    <a id="btnSearch" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-search'" style="float:right; display:none">Search</a>
+    <input id="txtSearchSQL" class="easyui-textbox" multiline="true" style="width:100%;height:50px;">
+</div>
+<table id="tblUpdate" class="easyui-datagrid" title="Update Window" style="width:100%;max-height:38%"
+       data-options="rownumbers:true,singleSelect:true,collapsible:true,toolbar:'#divUpdatePanel'">
+    <thead>
+        <tr>
+            <th data-options="field:'ColumnName',width:300">Column Name</th>
+            <th data-options="field:'ColumnData',width:350">New Value</th>
+            <th data-options="field:'DataType',width:350">Data Type</th>
+        </tr>
+    </thead>
+</table>
+<div id="divUpdatePanel" style="padding:10px">
+    <label style="font-weight:bold;margin: 0 5px 0 15px">Column Name :</label>
+    <select id="cboColumnUpdate" class="easyui-combobox" panelHeight="auto" style="min-width:150px"></select>
+    <label style="font-weight:bold;">=</label>
+    <input id="txtValueUpdate" class="easyui-textbox" data-options="prompt:'Enter Updated Value'," style="min-width:150px">
+    <a id="btnAddUpdate" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'"></a>
+    <a id="btnRemoveUpdate" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cancel'"></a>
+    <a id="btnClearUpdate" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="UpdatePanelRefresh()"></a>
+    <input id="txtRemarks" class="easyui-textbox" data-options="prompt:'Enter Any Remarks'," style="min-width:300px">
+    @*<label style="color:red; font-weight:bold; margin:0px 5px 0px 100px">Delete ?</label>
+        <input id="bIsDelete" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'">*@
+    <a id="btnSave" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'" style="float:right;font-weight:bold; color:green">Execute</a><br>
+</div>
+
+<style>
+    .combo-panel {
+        max-height: 300px;
+    }
+</style>
+<script type="text/javascript">
+    var _sMiddleCondition = '';
+    var _sWhereClause = '';
+    var _oColList = [];
+    var _bIsDelete = false;
+    var sTableNameWithSchema = '';
+
+        $(document).ready(function () {
+        debugger;
+            var oActivityTables = @Html.Raw( new System.Web.Script.Serialization.JavaScriptSerializer().Serialize(@ViewBag.ActivityTables));
+            $('#cboTable').combobox({ data: oActivityTables, valueField: 'TableName', textField: 'TableName' });
+            $('#txtSearchSQL').textbox('readonly');
+        });
+
+    $('#cboTable').combobox({
+	onSelect: function(param){
+        debugger;
+        if (param.TableName == '') {
+            alert("Please Select Any Table");
+            return;
+        }
+        var oCol = {
+            TableName: param.TableName
+        }
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/ActivityLogs/GetsByTable",
+            traditional: true,
+            data: JSON.stringify(oCol),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                debugger;
+                var oDataList = jQuery.parseJSON(data);
+                if (oDataList != null) {
+                    $('#cboColumn').combobox({ data: oDataList, valueField: 'ColumnName', textField: 'ColumnName' });
+                    if (parseInt($('#txtTop').textbox('getText')) < 1) {
+                        alert('Please Select Atleast 1 Data !!');
+                        return;
+                    }
+                    sTableNameWithSchema = param.TableSchema + "." + param.TableName;
+                    $('#txtSearchSQL').textbox('setText', 'SELECT TOP(' + parseInt($('#txtTop').textbox('getText')) + ') * FROM ' + sTableNameWithSchema);
+                    _oColList = oDataList;
+                    $('#tblDynamicTable').datagrid('loadData', []);
+                    _sWhereClause = '';
+                    $('#btnSearch').click();
+                }
+                else {
+                    alert(sFeedBackMessage);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+        }
+    });
+    $('#btnAdd').click(function (e) {
+        var sTableName = $('#cboTable').combobox('getText');
+        if (sTableName == '') {
+              alert("Please Select Any Table");
+              return;
+        }
+        var sColumnName = $('#cboColumn').combobox('getText');
+        if (sColumnName == '') {
+              alert("Please Select Any Column");
+              return;
+        }
+        sColumnName = '';
+        for (var i = 0; i < _oColList.length; i++) {
+            if ($('#cboColumn').combobox('getText') == _oColList[i].ColumnName) {
+                sColumnName = _oColList[i].ColumnName;
+            }
+        }
+        if (sColumnName == '') {
+            alert('Please Select Any Valid Column From List !');
+            return;
+        }
+        var sValue = $('#txtValue').textbox('getText');
+        if (sValue == '') {
+              alert("Please Enter Column Value");
+              return;
+        }
+        var sPreviousSQL = $('#txtSearchSQL').textbox('getText');
+        if (sPreviousSQL == '' && _sMiddleCondition!='') {
+              alert("Please Enter Previous SQL");
+              return;
+        }
+        _sWhereClause = _sWhereClause + _sMiddleCondition + ' ' + sColumnName + " = ''" + sValue + "''";
+        if ((sPreviousSQL + _sMiddleCondition).search("WHERE") < 0) {
+            _sMiddleCondition = ' WHERE '
+        }
+        $('#txtSearchSQL').textbox('setText', sPreviousSQL + _sMiddleCondition + ' ' + sColumnName + " = '" + sValue + "'");
+        _sMiddleCondition = ' AND ';
+        $('#cboColumn').combobox('setText', '');
+        $('#txtValue').textbox('setText', '');
+        $('#btnSearch').click();
+    });
+    $('#btnClear').click(function (e) {
+        $('#cboTable').combobox('setText', '');
+        $('#cboColumn').combobox('setText', '');
+        $('#txtValue').textbox('setText', '');
+        $('#txtSearchSQL').textbox('setText', '');
+        _sWhereClause = '';
+        _sMiddleCondition = '';
+        window.location.reload();
+    });
+    $('#btnBack').click(function (e) {
+        var sTempStr = $('#txtSearchSQL').textbox('getText');
+        sTempStr = sTempStr.substring(0, sTempStr.length - 1);
+        $('#txtSearchSQL').textbox('setText', sTempStr);
+    });
+
+    $('#btnSearch').click(function (e) {
+        debugger;
+        var ActivityLogs = {
+            ErrorMessage : $('#txtSearchSQL').textbox('getText')
+        }
+        $.messager.progress({
+            title: 'Please Wait',
+            msg: 'Loading data...'
+        });
+         $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/ActivityLogs/Search",
+            traditional: true,
+            data: JSON.stringify(ActivityLogs),
+            contentType: "application/json; charset=utf-8",
+             success: function (data) {
+                 debugger;
+                 var oDataList = jQuery.parseJSON(data);
+                 oDataList = jQuery.parseJSON(oDataList);
+                 if (oDataList != null) {
+                     var makeList = [];
+                     for (var i = 0; i < _oColList.length; i++) {
+                         makeList.push({
+                             field: _oColList[i].ColumnName,
+                             title : _oColList[i].ColumnName,
+                             width : 100
+                         })
+                     }
+                     $('#tblDynamicTable').datagrid({
+                            data: oDataList,
+                            columns:[makeList]
+                     });
+                     $.messager.progress('close');
+                     UpdatePanelRefresh();
+                }
+                else {
+                    alert(sFeedBackMessage);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+    });
+    function UpdatePanelRefresh() {
+        $('#cboColumnUpdate').combobox({ data: _oColList, valueField: 'ColumnName', textField: 'ColumnName' });
+        $('#txtValueUpdate').textbox('setText', '');
+        $('#tblUpdate').datagrid('loadData',[]);
+    }
+    function ConfirmDelete(){
+        if ($('#tblUpdate').datagrid('getRows').length > 0) {
+            alert('Please Delete All Data From Update Panel !!');
+            return false;
+        }
+        $.messager.confirm('Alert', 'Are You Sure To Delete This?', function(r){
+            if (r) {
+                _bIsDelete = r;
+            }
+            else {
+                _bIsDelete = false;
+            }
+        });
+    }
+    $('#btnAddUpdate').click(function (e) {
+        var sTableName = $('#cboTable').combobox('getText');
+        if (sTableName == '') {
+              alert("Please Select Any Table");
+              return;
+        }
+        var sColumnName = $('#cboColumnUpdate').combobox('getText');
+        if (sColumnName == '') {
+              alert("Please Select Any Column");
+              return;
+        }
+        var sValue = $('#txtValueUpdate').textbox('getText');
+        if (sValue == '') {
+              alert("Please Enter Column Value");
+              return;
+        }
+        $('#cboColumnUpdate').combobox('setText','');
+        $('#txtValueUpdate').textbox('setText', '');
+
+        var sDataType = "";
+        for (var i = 0; i < _oColList.length; i++) {
+            if (sColumnName == _oColList[i].ColumnName) {
+                sDataType = _oColList[i].DataType
+            }
+        }
+        debugger;
+        var obj = {
+            ColumnName: sColumnName,
+            ColumnData: sValue,
+            DataType: sDataType
+        }
+        $('#tblUpdate').datagrid('appendRow',obj);
+    });
+    $("#btnRemoveUpdate").click(function(){
+                var oData= $('#tblUpdate').datagrid('getSelected');
+                if(oData==null)
+                {
+                    alert("Invalid Field!!! Please Select a Valid Field!");
+                    return false;
+                }
+                if (!confirm("Confirm to Delete?")) return ;
+                var SelectedRowIndex = $('#tblUpdate').datagrid('getRowIndex', oData);
+                alert("Delete sucessfully");
+                $('#tblUpdate').datagrid('deleteRow',SelectedRowIndex);
+    });
+    $(function(){
+        $('#bIsDelete').switchbutton({
+            checked: false,
+            onChange: function(checked){
+                _bIsDelete = checked;
+            }
+        })
+    })
+    $('#btnSave').click(function (e) {
+        if ($('#tblDynamicTable').datagrid('getRows').length != 1) {
+            alert('Please Search And Update Only One Data !!');
+            return;
+        }
+        var dbOperation = 2;
+        debugger;
+        //if (_bIsDelete == true) {
+        //    dbOperation = 3;
+        //}
+        //else {
+        //    if ($('#tblUpdate').datagrid('getRows').length == 0) {
+        //        alert('There Is Nothing No Update !!');
+        //        return;
+        //    }
+        //}
+
+        var oUpdateObject = {
+            TableName : sTableNameWithSchema,
+            ActivityColumns : $('#tblUpdate').datagrid('getRows'),
+            WhereClause : _sWhereClause,
+            Remarks : $('#txtRemarks').textbox('getText'),
+            DBOperationID : dbOperation
+        }
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/ActivityLogs/UpdateDatabaseTable",
+            traditional: true,
+            data: JSON.stringify(oUpdateObject),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                debugger;
+                var oDataList = jQuery.parseJSON(data);
+                oDataList = jQuery.parseJSON(oDataList);
+                if (oDataList != null && oDataList[0].ActivityLogID > 0) {
+                    alert("Data Updated Successfully");
+                    window.location.href = "/ActivityLogs/ActivityLogsList?nUserID=1";
+                }
+                else {
+                    alert(sFeedBackMessage);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+            }
+        });
+        _bIsDelete = false;
+        //$(function(){
+        //    $('#sb').switchbutton({
+        //        checked: false,
+        //    })
+        //})
+    });
+</script>
+
