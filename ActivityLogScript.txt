@@ -1,0 +1,327 @@
+USE [YOUR_DATABASE_NAME]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fn_split_string_byIndex]    Script Date: 7/1/2020 2:25:12 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[fn_split_string_byIndex]
+(
+    @sString NVARCHAR(MAX),
+	@index AS INT,
+    @delimiter NVARCHAR(MAX)
+)
+RETURNS NVARCHAR(MAX)  
+AS   
+BEGIN
+	DECLARE @returnValue AS NVARCHAR(MAX)
+	SET @returnValue = (SELECT TOP 1 tempTable.value FROM ( SELECT TOP(@index) id, value FROM fn_split_string(@sString,'#') ORDER BY id) AS tempTable ORDER BY tempTable.id DESC)
+	RETURN @returnValue;  
+END;
+GO
+/****** Object:  UserDefinedFunction [dbo].[fn_split_string]    Script Date: 7/1/2020 2:25:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+Create FUNCTION [dbo].[fn_split_string]
+(
+    @string    nvarchar(max),
+    @delimiter nvarchar(max)
+)
+
+RETURNS TABLE AS RETURN
+(
+    SELECT 
+           ROW_NUMBER ( ) over(order by (select 0))  id     --  Not sure if it works correct
+         , Split.a.value('.', 'NVARCHAR(MAX)')       value
+    FROM
+    (
+        SELECT CAST('<X>'+REPLACE(@string, @delimiter, '</X><X>')+'</X>' AS XML) AS String
+    ) AS a
+    CROSS APPLY String.nodes('/X') AS Split(a)
+)
+
+GO
+/****** Object:  Table [dbo].[ActivityLog]    Script Date: 7/1/2020 2:25:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ActivityLog](
+	[ActivityLogID] [int] NOT NULL,
+	[TableName] [nvarchar](max) NOT NULL,
+	[ColNames] [nvarchar](max) NOT NULL,
+	[ColPreviousValues] [nvarchar](max) NULL,
+	[ColNewValues] [nvarchar](max) NOT NULL,
+	[WhereClause] [nvarchar](max) NOT NULL,
+	[BranchID] [int] NULL,
+	[DBOperationID] [int] NOT NULL,
+	[Remarks] [nvarchar](max) NULL,
+	[DBUserID] [int] NOT NULL,
+	[DBServerDateTime] [datetime] NOT NULL,
+ CONSTRAINT [PK_ActivityLog] PRIMARY KEY CLUSTERED 
+(
+	[ActivityLogID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 10) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CommonWork]    Script Date: 7/1/2020 2:25:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CommonWork](
+	[CommonWorkID] [int] NOT NULL,
+	[CommonWorkName] [nvarchar](1024) NOT NULL,
+	[Remarks] [nvarchar](1024) NULL,
+	[WhereCols] [nvarchar](max) NULL,
+	[UpdateCols] [nvarchar](max) NULL,
+	[TypeID] [int] NULL,
+	[TypeName] [nvarchar](512) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Person]    Script Date: 7/1/2020 2:25:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Person](
+	[PersonID] [int] NOT NULL,
+	[PersonName] [varchar](255) NOT NULL,
+	[PersonAge] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PersonID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 10) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_ActivityLog]    Script Date: 7/1/2020 2:25:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[SP_ActivityLog]
+	@TableName VARCHAR(MAX),
+	@ColNames VARCHAR(MAX),
+	@ColNewValues VARCHAR(MAX),
+	@WhereClause VARCHAR(MAX),
+	@BranchID INT,
+	@DBOperationID INT,
+	@Remarks VARCHAR(MAX)
+
+AS
+BEGIN
+	DECLARE 
+	@DBServerDatetime DATETIME,
+	@IDs VARCHAR(500),
+	@Number VARCHAR(500),
+	@CharSpliter CHAR,
+	@ColPreviousValue VARCHAR(MAX),
+	@Value VARCHAR(MAX),
+	@ActivityLogID INT,
+	@Cursor_Name CURSOR,
+	@DBUserID INT
+
+	BEGIN
+		SET @DBServerDateTime = GETDATE();
+		SET @CharSpliter = '#';
+		SET @ColNames = @ColNames + @CharSpliter;
+		SET @ColNewValues = @ColNewValues + @CharSpliter;
+		
+		DECLARE @sql nvarchar(MAX) 
+		SET @ColPreviousValue = ''
+		SET @DBUserID = 1
+		--SET @DBUserID = (SELECT UserID FROM Users.UserInfo WHERE UserCode = (SELECT right((SELECT SYSTEM_USER), len((SELECT SYSTEM_USER)) - charindex('\', (SELECT SYSTEM_USER)))))
+		---------------------------------------------------------------------------ROOT VALIDATION----------------------------------------------------------------------------------
+		IF(@TableName = '')
+		BEGIN
+			ROLLBACK
+				RAISERROR (N' ~ THERE IS NO TABLE NAME !!~',16,1);
+			RETURN
+		END
+		IF(@ColNames = '')
+		BEGIN
+			ROLLBACK
+				RAISERROR (N' ~ THERE IS NO COLUMN NAME !!~',16,1);
+			RETURN
+		END
+		IF(@ColNewValues = '')
+		BEGIN
+			ROLLBACK
+				RAISERROR (N' ~ THERE IS NO COLUMN VALUES !!~',16,1);
+			RETURN
+		END
+		IF(@WhereClause = '')
+		BEGIN
+			ROLLBACK
+				RAISERROR (N' ~ THERE IS NO SEARCHING QUERY !!~',16,1);
+			RETURN
+		END
+		IF(@DBUserID IS NULL)
+		BEGIN
+			ROLLBACK
+				RAISERROR (N' ~ NO USER FOUND IN DATABASE !!~',16,1);
+			RETURN
+		END
+		EXEC('SELECT * FROM ' + @TableName + ' WHERE ' + @WhereClause)
+		IF (@@ROWCOUNT>1)
+		BEGIN
+			ROLLBACK
+				RAISERROR (N' ~ PROGRAM HAS BEEN POSPONED !! THERE IS MULTIPLE RECORD IN SELECTED TABLE FOR THIS ACTION : !!~',16,1);
+			RETURN
+		END
+		----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		CREATE TABLE #TempTable(ttID int IDENTITY(1,1) PRIMARY KEY,ttText varchar(255))
+
+		---------------------------------------------------------------Get Previous Target Table Data in String (Start)-------------------------------------------------------------
+		IF(@DBOperationID=2 OR @DBOperationID=3) -- FOR UPDATE OR DELETE
+		BEGIN
+			DECLARE Cursor_Log CURSOR LOCAL FORWARD_ONLY  FOR  
+			SELECT value FROM fn_split_string(@ColNames,'#')
+			OPEN Cursor_Log 
+			FETCH NEXT FROM Cursor_Log INTO  @Value
+				WHILE(@@Fetch_Status <> -1)
+				BEGIN 
+					IF(@Value <> '')
+					BEGIN
+						SET @sql = 'SELECT [' + @Value + '] FROM ' + @TableName + ' WHERE ' + @WhereClause
+						INSERT INTO #TempTable(ttText)EXEC (@sql)
+						IF NOT EXISTS(SELECT * FROM #TempTable)
+						BEGIN
+							ROLLBACK
+								RAISERROR (N' ~ THERE IS NO PREVIOUS RECORD !!~',16,1);
+							RETURN
+						END
+						SET @ColPreviousValue = @ColPreviousValue + ISNULL(CONVERT(VARCHAR(512),(SELECT TOP 1 ttText FROM #TempTable ORDER BY ttID DESC)),'') + '#'
+					END
+				FETCH NEXT FROM Cursor_Log INTO @Value
+				END  
+			CLOSE Cursor_Log  
+			DEALLOCATE Cursor_Log  
+		END
+		IF(@DBOperationID=3) -- FOR DELETE
+		BEGIN
+			SET @ColNewValues = 'DELETED'
+		END
+		--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+		------------------------------------------------------------------Update Log Table (Start)--------------------------------------------------------------------------------
+		SET @ActivityLogID = (SELECT ISNULL(MAX(ActivityLogID),0)+1 FROM [ActivityLog])
+		INSERT INTO ActivityLog (ActivityLogID,		TableName,	ColNames,	ColPreviousValues,	ColNewValues,	WhereClause,	BranchID,	DBOperationID,	Remarks,	DBUserID,	DBServerDateTime)
+						  VALUES(@ActivityLogID,	@TableName,	@ColNames,	@ColPreviousValue,	@ColNewValues,	@WhereClause,	@BranchID,	@DBOperationID,	@Remarks,	@DBUserID,	@DBServerDatetime)
+		--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		DROP TABLE #TempTable
+
+		SET @sql = ''
+		------------------------------------------------------------------Update Target Table (Start)-----------------------------------------------------------------------------
+		IF(@DBOperationID=2) -- FOR (UPDATE)
+		BEGIN
+			DECLARE Cursor_Log CURSOR LOCAL FORWARD_ONLY  FOR  
+			SELECT value FROM fn_split_string(@ColNames,'#')
+			OPEN Cursor_Log 
+			FETCH NEXT FROM Cursor_Log INTO  @Value
+				WHILE(@@Fetch_Status <> -1)
+				BEGIN 
+					IF(@Value <> '')
+					BEGIN
+						SET @sql = @sql + '[' + @Value + '] = ~' + (SELECT TOP 1 value FROM fn_split_string(@ColNewValues,'#')) + '~,'
+						SET @ColNewValues = (SELECT right(@ColNewValues, len(@ColNewValues) - charindex('#', @ColNewValues)))
+						SET @sql = (SELECT REPLACE(@sql, '~', (SELECT CHAR(39))))
+					END
+				FETCH NEXT FROM Cursor_Log INTO @Value
+				END  
+			CLOSE Cursor_Log  
+			DEALLOCATE Cursor_Log  
+
+			SET @sql = 'UPDATE ' + @TableName + ' SET ' + (SELECT LEFT(@sql, NULLIF(LEN(@sql)-1,-1))) + ' WHERE ' + @WhereClause
+			PRINT 'Final UPDATE SQL : ' + @sql
+			EXEC(@sql)
+		END
+
+		ELSE IF(@DBOperationID=3) -- (FOR DELETE)
+		BEGIN
+			SET @sql = 'DELETE FROM ' + @TableName + ' WHERE ' + @WhereClause
+			PRINT 'Final DELETE SQL : ' + @sql
+			EXEC(@sql)
+		END
+		--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	END
+	SELECT * FROM ActivityLog WHERE ActivityLogID = @ActivityLogID
+	SELECT 2 AS [ResultSet], 'asa' AS [test];
+END
+
+
+
+GO
+/****** Object:  StoredProcedure [dbo].[SP_CommonWork]    Script Date: 7/1/2020 2:25:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		@Author: ALI AKRAM>
+-- Create date: @03-12-2019>
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_CommonWork] 
+	@CommonWorkID AS INT,
+	@CommonWorkName AS VARCHAR(MAX),
+	@UpdateCols AS VARCHAR(MAX),
+	@DBUserID AS INT
+
+AS
+BEGIN
+
+DECLARE 
+@DBServerDatetime AS DATETIME = GETDATE(),
+@sSpliter AS NVARCHAR(128) = '#'
+
+	IF(@DBUserID=0)
+	BEGIN
+		ROLLBACK
+			RAISERROR (N'~ Your Login Has Expired. Please Login Again !!~',16,1);
+		RETURN
+	END
+	IF (@CommonWorkID = 0 )
+	BEGIN
+		ROLLBACK
+			RAISERROR (N'~ THERE IS NO JOB TYPE TO DO !!~',16,1);
+		RETURN
+	END
+	IF (@UpdateCols = '' OR @UpdateCols = null)
+	BEGIN
+		ROLLBACK
+			RAISERROR (N'~ THERE IS NO VALUE !!~',16,1);
+		RETURN
+	END
+---------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------JOB ROLLBACK---------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------Delivered to Complete----------------------------------------------------------
+	IF (@CommonWorkID = 1)
+	BEGIN
+		DECLARE @LSOCODE VARCHAR(50) = @UpdateCols
+		IF ((SELECT LSOLastStatus FROM CS.LSOMASTER WHERE LSOCode = @UpdateCols)<>16)
+		BEGIN
+			ROLLBACK
+				RAISERROR (N'~ THIS LSO IS NOT IN DELIVERED STATUS !!~',16,1);
+			RETURN
+		END
+		UPDATE CS.LSOMASTER SET ISDELIVERED=0, LSOLASTSTATUS=14, DELIVERYDATE=NULL, DELIVEREDBY=NULL WHERE LSOCODE =@LSOCODE
+		SELECT * FROM CS.LSOINVOICEDETAIL WHERE LSOINVOICEID= (SELECT LSOINVOICEID FROM CS.LSOINVOICEMASTER WHERE (LSOCODE = @LSOCODE AND GRANDTOTAL = 0) OR (LSOCODE = @LSOCODE AND ISCASHDEPOSITED IS NULL))
+		DELETE FROM CS.LSOINVOICEDETAIL WHERE LSOINVOICEID= (SELECT LSOINVOICEID FROM CS.LSOINVOICEMASTER WHERE (LSOCODE = @LSOCODE AND GRANDTOTAL = 0) OR (LSOCODE = @LSOCODE AND ISCASHDEPOSITED IS NULL))
+		SELECT * FROM CS.LSOINVOICEMASTER WHERE (LSOCODE = @LSOCODE AND GRANDTOTAL = 0) OR (LSOCODE = @LSOCODE AND ISCASHDEPOSITED IS NULL)
+		DELETE FROM CS.LSOINVOICEMASTER WHERE (LSOCODE = @LSOCODE AND GRANDTOTAL = 0) OR (LSOCODE = @LSOCODE AND ISCASHDEPOSITED IS NULL)
+		SELECT * FROM CS.LSODISCOUNT WHERE LSOCODE=@LSOCODE
+		DELETE FROM CS.LSODISCOUNT WHERE LSOCODE=@LSOCODE
+	END
+	
+
+
+
+
+END
+GO
